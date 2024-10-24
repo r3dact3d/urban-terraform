@@ -1,30 +1,42 @@
 ---
 - name: Terraform Init and Plan
   hosts: localhost
+  connection: local
   gather_facts: no
+  vars_files:
+    - ../vars.yml
   collections:
     - cloud.terraform
+    - amazon.aws
 
   tasks:
+    - name: Check if S3 bucket exists
+      amazon.aws.s3_bucket_info:
+        name: "{{ s3_bucket_name }}"
+      register: s3_bucket_info
+
+    - name: Create S3 bucket if it doesn't exist
+      amazon.aws.s3_bucket:
+        name: "{{ s3_bucket_name }}"
+        state: present
+        region: "{{ region }}"
+        public_access:
+          block_public_acls: true
+          ignore_public_acls: true
+      when: s3_bucket_info.buckets | default([]) | length == 0
+
     - name: Initialize Terraform
       cloud.terraform.terraform:
-        project_path: "/path/to/terraform"
-        workspace: default
+        project_path: "terraform/"
         state: present
-
-    - name: Create Terraform plan
-      cloud.terraform.terraform:
-        project_path: "/path/to/terraform"
-        workspace: default
-        state: planned
-      register: terraform_plan
-
-    - name: Stash the Terraform plan in a variable
-      cloud.terraform.plan_stash:
-        plan_content: "{{ terraform_plan.plan }}"
-        stash_type: content   # Stashing the plan in memory (as a variable)
-      register: stashed_plan
-
-    - name: Debug Stashed Plan Info (for review purposes)
+        force_init: true
+        check_mode: true
+        backend_config:
+          region: "{{ region }}"
+          bucket: "{{ s3_bucket_name }}"
+          key: "terraform.tfstate"
+      register: terraform_output
+    
+    - name: Show Terraform output
       debug:
-        var: stashed_plan.stash
+        var: terraform_output
