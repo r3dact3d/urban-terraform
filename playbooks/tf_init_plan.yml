@@ -36,8 +36,8 @@
       cloud.terraform.terraform:
         project_path: "urban/terraform/"
         state: present
-        #force_init: true
-        plan_file: "urban/theplan"
+        force_init: true
+        plan_file: "theplan"
         backend_config:
           region: "{{ region }}"
           bucket: "{{ s3_bucket_name }}"
