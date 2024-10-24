@@ -25,8 +25,21 @@
           ignore_public_acls: true
       when: s3_bucket_info.buckets | default([]) | length == 0
     
+    - name: Create directory if it doesn't exist
+      ansible.builtin.file:
+        path: "terraform/"
+        state: directory
+        mode: '0755'
+
+    - name: Clone github repo
+      ansible.builtin.git:
+        repo: "https://github.com/r3dact3d/urban-terraform"
+        dest: "terraform/"
+        version: "main"
+        force: true
+
     - name: Initialize Terraform
-      community.general.terraform:
+      cloud.terraform.terraform:
         project_path: "terraform/"
         state: present
         force_init: true
