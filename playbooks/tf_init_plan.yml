@@ -28,13 +28,13 @@
     - name: Clone github repo
       ansible.builtin.git:
         repo: "https://github.com/r3dact3d/urban-terraform"
-        dest: "."
+        dest: "urban"
         version: "main"
         force: true
 
     - name: Initialize Terraform
       cloud.terraform.terraform:
-        project_path: "urban-terraform/terraform/"
+        project_path: "urban/urban-terraform/terraform/"
         state: present
         force_init: true
         backend_config:
