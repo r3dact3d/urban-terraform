@@ -22,4 +22,7 @@
           bucket: "{{ s3_bucket_name }}"
           key: "terraform.tfstate"
       register: terraform_output
-        plan_content: "{{ stashed_plan.stash }}"
+
+    - name: Show Terraform output
+      debug:
+        var: terraform_output
