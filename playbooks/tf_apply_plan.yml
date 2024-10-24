@@ -2,10 +2,24 @@
 - name: Apply Stashed Terraform Plan
   hosts: localhost
   gather_facts: no
+  vars_files:
+    - ../vars.yml
 
   tasks:
+    - name: Load a terraform plan file from variable
+      cloud.terraform.plan_stash:
+        path: tfplan
+        var_name: "{{ stashed_plan }}"
+        state: load
+      #no_log: true
+
     - name: Apply the stashed Terraform plan from a variable
       cloud.terraform.terraform:
-        project_path: "/urban/terraform"
+        plan_file: tfplan
         state: present
+        backend_config:
+          region: "{{ region }}"
+          bucket: "{{ s3_bucket_name }}"
+          key: "terraform.tfstate"
+      register: terraform_output
         plan_content: "{{ stashed_plan.stash }}"

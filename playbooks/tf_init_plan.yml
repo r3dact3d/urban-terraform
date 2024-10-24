@@ -59,8 +59,4 @@
 
     - name: Show Terraform output
       debug:
-        var: stashed_plan
-
-    - name: Show Terraform output
-      debug:
         var: registered_plan
