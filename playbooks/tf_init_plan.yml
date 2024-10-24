@@ -44,7 +44,23 @@
           key: "terraform.tfstate"
       check_mode: yes
       register: terraform_output
-    
+
     - name: Show Terraform output
       debug:
         var: terraform_output
+
+    - name: Stash Terraform plan
+      cloud.terraform.plan_stash:
+        path: "theplan"
+        var_name: stashed_plan
+        state: stash
+      no_log: true
+      register: registered_plan
+
+    - name: Show Terraform output
+      debug:
+        var: stashed_plan
+
+    - name: Show Terraform output
+      debug:
+        var: registered_plan

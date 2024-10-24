@@ -6,7 +6,6 @@
   tasks:
     - name: Apply the stashed Terraform plan from a variable
       cloud.terraform.terraform:
-        project_path: "/path/to/terraform"
-        workspace: default
-        state: applied
+        project_path: "/urban/terraform"
+        state: present
         plan_content: "{{ stashed_plan.stash }}"
