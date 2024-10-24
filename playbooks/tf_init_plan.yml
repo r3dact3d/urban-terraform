@@ -34,7 +34,7 @@
 
     - name: Initialize Terraform
       cloud.terraform.terraform:
-        project_path: "urban/urban-terraform/terraform/"
+        project_path: "urban/terraform/"
         state: present
         force_init: true
         backend_config:
