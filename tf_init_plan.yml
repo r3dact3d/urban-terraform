@@ -24,9 +24,9 @@
           block_public_acls: true
           ignore_public_acls: true
       when: s3_bucket_info.buckets | default([]) | length == 0
-
+    
     - name: Initialize Terraform
-      cloud.terraform.terraform:
+      community.general.terraform:
         project_path: "terraform/"
         state: present
         force_init: true
