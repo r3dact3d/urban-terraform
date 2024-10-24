@@ -28,12 +28,13 @@
     - name: Initialize Terraform
       community.general.terraform:
         project_path: "terraform/"
-        state: planned
+        state: present
         force_init: true
         backend_config:
           region: "{{ region }}"
           bucket: "{{ s3_bucket_name }}"
           key: "terraform.tfstate"
+      check_mode: yes
       register: terraform_output
     
     - name: Show Terraform output
