@@ -51,10 +51,10 @@
 
     - name: Stash Terraform plan
       cloud.terraform.plan_stash:
-        path: "theplan"
+        path: "urban/terraform/theplan"
         var_name: stashed_plan
         state: stash
-      no_log: true
+      #no_log: true
       register: registered_plan
 
     - name: Show Terraform output
