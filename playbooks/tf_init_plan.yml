@@ -28,9 +28,8 @@
     - name: Initialize Terraform
       community.general.terraform:
         project_path: "terraform/"
-        state: present
+        state: planned
         force_init: true
-        check_mode: true
         backend_config:
           region: "{{ region }}"
           bucket: "{{ s3_bucket_name }}"
