@@ -1,0 +1,30 @@
+---
+- name: Terraform Init and Plan
+  hosts: localhost
+  gather_facts: no
+  collections:
+    - cloud.terraform
+
+  tasks:
+    - name: Initialize Terraform
+      cloud.terraform.terraform:
+        project_path: "/path/to/terraform"
+        workspace: default
+        state: present
+
+    - name: Create Terraform plan
+      cloud.terraform.terraform:
+        project_path: "/path/to/terraform"
+        workspace: default
+        state: planned
+      register: terraform_plan
+
+    - name: Stash the Terraform plan in a variable
+      cloud.terraform.plan_stash:
+        plan_content: "{{ terraform_plan.plan }}"
+        stash_type: content   # Stashing the plan in memory (as a variable)
+      register: stashed_plan
+
+    - name: Debug Stashed Plan Info (for review purposes)
+      debug:
+        var: stashed_plan.stash

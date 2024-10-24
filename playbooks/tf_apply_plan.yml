@@ -1,0 +1,12 @@
+---
+- name: Apply Stashed Terraform Plan
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Apply the stashed Terraform plan from a variable
+      cloud.terraform.terraform:
+        project_path: "/path/to/terraform"
+        workspace: default
+        state: applied
+        plan_content: "{{ stashed_plan.stash }}"
