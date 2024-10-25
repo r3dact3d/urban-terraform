@@ -23,7 +23,7 @@
 
     - name: Apply the stashed Terraform plan from a variable
       cloud.terraform.terraform:
-        project_path: "urban/terraform/tfplan"
+        project_path: "urban/terraform"
         plan_file: tfplan
         state: present
         backend_config:
