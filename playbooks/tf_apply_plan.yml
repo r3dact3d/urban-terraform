@@ -6,14 +6,14 @@
   vars_files:
     - ../vars.yml
   vars:
-    - stashed_plan: "{{ stashed_plan }}"
+    - terraform_plan: "{{ terraform_plan }}"
 
 
   tasks:
     - name: Load a terraform plan file from variable
       cloud.terraform.plan_stash:
         path: tfplan
-        var_name: "{{ stashed_plan }}"
+        var_name: "{{ terraform_plan }}"
         state: load
       #no_log: true
 

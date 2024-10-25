@@ -63,4 +63,4 @@
 
     - name: Save stashed plan as a fact
       set_fact:
-        stashed_plan: "{{ stashed_plan }}"
+        terraform_plan: "{{ registered_plan.ansible_stats.data.stashed_plan }}"
