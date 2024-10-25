@@ -5,6 +5,9 @@
   gather_facts: no
   vars_files:
     - ../vars.yml
+  vars:
+    - stashed_plan: "{{ stashed_plan }}"
+
 
   tasks:
     - name: Load a terraform plan file from variable

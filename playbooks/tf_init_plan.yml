@@ -60,3 +60,7 @@
     - name: Show Terraform output
       debug:
         var: registered_plan
+
+    - name: Save stashed plan as a fact
+      set_fact:
+        stashed_plan: "{{ stashed_plan }}"
