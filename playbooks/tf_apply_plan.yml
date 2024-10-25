@@ -5,10 +5,15 @@
   gather_facts: no
   vars_files:
     - ../vars.yml
-  
-
 
   tasks:
+#    - name: Clone github repo
+#      ansible.builtin.git:
+#        repo: "https://github.com/r3dact3d/urban-terraform"
+#        dest: "urban"
+#        version: "main"
+#        force: true
+
     - name: Load a terraform plan file from variable
       cloud.terraform.plan_stash:
         path: tfplan
@@ -18,6 +23,7 @@
 
     - name: Apply the stashed Terraform plan from a variable
       cloud.terraform.terraform:
+        project_path: "."
         plan_file: tfplan
         state: present
         backend_config:
