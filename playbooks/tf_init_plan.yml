@@ -60,7 +60,4 @@
     - name: Show Terraform output
       debug:
         var: registered_plan
-
-    - name: Save stashed plan as a fact
-      set_fact:
-        terraform_plan: "{{ registered_plan.ansible_stats.data.stashed_plan }}"
+...
