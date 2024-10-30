@@ -27,7 +27,7 @@
   
     - name: Clone github repo
       ansible.builtin.git:
-        repo: "https://github.com/r3dact3d/urban-terraform"
+        repo: "{{ git_url_tf }}"
         dest: "urban"
         version: "main"
         force: true
