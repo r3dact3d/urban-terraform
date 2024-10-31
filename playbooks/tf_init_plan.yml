@@ -36,7 +36,8 @@
       cloud.terraform.terraform:
         project_path: "urban/terraform/"
         state: present
-        force_init: true
+        force_init: yes
+        init_reconfigure: yes
         plan_file: "theplan"
         backend_config:
           region: "{{ region }}"
