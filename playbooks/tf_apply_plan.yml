@@ -29,7 +29,7 @@
         backend_config:
           region: "{{ region }}"
           bucket: "{{ s3_bucket_name }}"
-          key: "terraform.tfstate"
+          key: "random.tfstate"
       register: terraform_output
 
     - name: Show Terraform output
