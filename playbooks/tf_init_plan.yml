@@ -3,8 +3,7 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  vars_files:
-    - ../vars.yml
+
   collections:
     - cloud.terraform
     - amazon.aws
@@ -12,14 +11,14 @@
   tasks:
     - name: Check if S3 bucket exists
       amazon.aws.s3_bucket_info:
-        name: "{{ s3_bucket_name }}"
+        name: "{{ tf_s3_bucket }}"
       register: s3_bucket_info
 
     - name: Create S3 bucket if it doesn't exist
       amazon.aws.s3_bucket:
-        name: "{{ s3_bucket_name }}"
+        name: "{{ tf_s3_bucket }}"
         state: present
-        region: "{{ region }}"
+        region: "{{ tf_region }}"
         public_access:
           block_public_acls: true
           ignore_public_acls: true
@@ -40,8 +39,8 @@
         init_reconfigure: yes
         plan_file: "theplan"
         backend_config:
-          region: "{{ region }}"
-          bucket: "{{ s3_bucket_name }}"
+          region: "{{ tf_region }}"
+          bucket: "{{ tf_s3_bucket }}"
           key: "random.tfstate"
       check_mode: yes
       register: terraform_output

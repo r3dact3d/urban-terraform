@@ -3,8 +3,9 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  vars_files:
-    - ../vars.yml
+  
+  collections:
+    - cloud.terraform
 
   tasks:
     - name: Clone github repo
@@ -29,8 +30,8 @@
         init_reconfigure: yes
         state: present
         backend_config:
-          region: "{{ region }}"
-          bucket: "{{ s3_bucket_name }}"
+          region: "{{ tf_region }}"
+          bucket: "{{ tf_s3_bucket }}"
           key: "random.tfstate"
       register: terraform_output
 
