@@ -60,4 +60,15 @@
     - name: Show Terraform output
       debug:
         var: registered_plan
+
+    - name: Example task to register a variable
+      shell: echo "This is a test"
+      register: my_variable
+    
+    - name: Set variable
+      set_fact:
+        new_variable: "{{ my_variable }}"
+    - name: print variable
+      debug:
+        msg: "{{ new_variable }}"
 ...

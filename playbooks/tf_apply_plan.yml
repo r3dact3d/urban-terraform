@@ -38,3 +38,9 @@
     - name: Show Terraform output
       debug:
         var: terraform_output
+    - name: print variable with msg
+      debug:
+        msg: "{{ new_variable }}"
+    - name: print variable with var
+      debug:
+        var: new_variable
