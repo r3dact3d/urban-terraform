@@ -67,7 +67,7 @@
     
     - name: Set variable
       set_fact:
-        new_variable: "{{ my_variable }}"
+        new_variable: "{{ my_variable.stdout }}"
     - name: print variable
       debug:
         msg: "{{ new_variable }}"
