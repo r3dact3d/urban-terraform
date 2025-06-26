@@ -32,64 +32,64 @@ resource "aws_key_pair" "my_key" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0YP818L8HTt+pKUU+XPD8dJ9kYDhtplUKaodICGcS63A6EgdGGaxh45DVz8JmTNbP3RHQw6XbfTjNGmOO56UaGxQOsc+ONZ8fFjd+qa+7hBo6tIlrdRkrgZgKNDhTh4HijDgaqpPLhXroUK2TE61CSCiJezVbwwXtXU43wQYoeR06E+Ji1lfLLb5b5pIuUKwTRwa+6u9zL7JrDznKq5YZxsmkX3PNI9gHQT+SnSqPOGctXhbMQX7JWZA60EFx8MZXe8O9QC3LMrgNv90CCR9qnyd7/WTtb+lk/7lTYbFfj2W0WsQZMc2tnvoNv8azeCQcSHs6U2nsKd7lxXmmD0OFtXxSqI/O1628Q71sFjPIvET04I9ENHaAWwaI3s98I3Lt8Z5NLNqHrxwhmrFT5mTdn91Fzq4Ax7UKqcVG8Rtkzg7HnXL6nLIQs/cdRprysJIGC0aEpoHSN1OTqMcJkP4ySv5aYgT/G68Uau5JkBS8tKbeKNw+KE4Aq6tUJ+3etYc= brthomps@brthomps-thinkpadx1carbongen9.remote.csb"
 }
 
-resource "aws_vpc" "aap_vpc" {
+resource "aws_vpc" "exposed_vpc" {
   cidr_block           = "10.1.0.0/16"
   enable_dns_hostnames = "true"
   instance_tenancy     = "default"
 
   tags = {
-    Name      = "aap-VPC"
+    Name      = "Exposed_VPC"
     Terraform = "true"
   }
 }
 
-resource "aws_internet_gateway" "aap_igw" {
-  vpc_id = aws_vpc.aap_vpc.id
+resource "aws_internet_gateway" "exposed_igw" {
+  vpc_id = aws_vpc.exposed_vpc.id
 
   tags = {
-    Name      = "AAP_IGW"
+    Name      = "EXPOSED_IGW"
     Terraform = "true"
   }
 }
 
-resource "aws_route_table" "aap_pub_igw" {
-  vpc_id = aws_vpc.aap_vpc.id
+resource "aws_route_table" "exposed_pub_igw" {
+  vpc_id = aws_vpc.exposed_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.aap_igw.id
+    gateway_id = aws_internet_gateway.exposed_igw.id
   }
 
   tags = {
-    Name      = "AAP-RouteTable"
+    Name      = "Exposed-RouteTable"
     Terraform = "true"
   }
 }
 
-resource "aws_subnet" "aap_subnet" {
+resource "aws_subnet" "exposed_subnet" {
   availability_zone       = "us-east-2a"
   cidr_block              = "10.1.0.0/24"
   map_public_ip_on_launch = "true"
-  vpc_id                  = aws_vpc.aap_vpc.id
+  vpc_id                  = aws_vpc.exposed_vpc.id
 
   tags = {
-    Name      = "AAP-Subnet"
+    Name      = "Exposed-Subnet"
     Terraform = "true"
   }
 }
 
-resource "aws_route_table_association" "aap_rt_subnet_public" {
-  subnet_id      = aws_subnet.aap_subnet.id
-  route_table_id = aws_route_table.aap_pub_igw.id
+resource "aws_route_table_association" "exposed_rt_subnet_public" {
+  subnet_id      = aws_subnet.exposed_subnet.id
+  route_table_id = aws_route_table.exposed_pub_igw.id
 }
 
-resource "aws_security_group" "aap_security_group" {
-  name        = "aap-sg"
-  description = "Security Group for AAP webserver"
-  vpc_id      = aws_vpc.aap_vpc.id
+resource "aws_security_group" "exposed_security_group" {
+  name        = "exposed-sg"
+  description = "Security Group for exposed webserver"
+  vpc_id      = aws_vpc.exposed_vpc.id
 
   tags = {
-    Name      = "AAP-Security-Group"
+    Name      = "Exposed-Security-Group"
     Terraform = "true"
   }
 }
@@ -100,7 +100,7 @@ resource "aws_security_group_rule" "http_ingress_access" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
+  security_group_id = aws_security_group.exposed_security_group.id
 }
 
 resource "aws_security_group_rule" "ssh_ingress_access" {
@@ -109,7 +109,7 @@ resource "aws_security_group_rule" "ssh_ingress_access" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
+  security_group_id = aws_security_group.exposed_security_group.id
 }
 
 resource "aws_security_group_rule" "postgresql_ingress_access" {
@@ -118,25 +118,7 @@ resource "aws_security_group_rule" "postgresql_ingress_access" {
   to_port           = 5432
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
-}
-
-resource "aws_security_group_rule" "redis_ingress_access" {
-  type              = "ingress"
-  from_port         = 6379
-  to_port           = 6379
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
-}
-
-resource "aws_security_group_rule" "secure_ingress_access" {
-  type              = "ingress"
-  from_port         = 8433
-  to_port           = 8433
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
+  security_group_id = aws_security_group.exposed_security_group.id
 }
 
 resource "aws_security_group_rule" "https_ingress_access" {
@@ -145,16 +127,7 @@ resource "aws_security_group_rule" "https_ingress_access" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
-}
-
-resource "aws_security_group_rule" "grpc_ingress_access" {
-  type              = "ingress"
-  from_port         = 50051
-  to_port           = 50051
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
+  security_group_id = aws_security_group.exposed_security_group.id
 }
 
 resource "aws_security_group_rule" "egress_access" {
@@ -163,49 +136,49 @@ resource "aws_security_group_rule" "egress_access" {
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.aap_security_group.id
+  security_group_id = aws_security_group.exposed_security_group.id
 }
 
 # Set ami for ec2 instance
-data "aws_ami" "rhel" {
+data "aws_ami" "fedora" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["RHEL-9.4.0_HVM*"]
+    values = ["fedora-coreos-42.2025*"]
   }
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["309956199498"]
+  owners = ["125523088429"]
 }
 
-resource "aws_instance" "aap_instance" {
-  instance_type               = "t2.xlarge"
-  vpc_security_group_ids      = [aws_security_group.aap_security_group.id]
+resource "aws_instance" "exposed_instance" {
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.exposed_security_group.id]
   associate_public_ip_address = true
   key_name        = aws_key_pair.my_key.key_name
   user_data                   = file("user_data.txt")
-  ami                         = data.aws_ami.rhel.id
+  ami                         = data.aws_ami.fedora.id
   availability_zone           = "us-east-2a"
-  subnet_id                   = aws_subnet.aap_subnet.id
+  subnet_id                   = aws_subnet.exposed_subnet.id
 
 # Specify the root block device to adjust volume size
   root_block_device {
-    volume_size = 100        # Set desired size in GB (e.g., 100 GB)
+    volume_size = 40        # Set desired size in GB (e.g., 100 GB)
     volume_type = "gp3"      # Optional: Specify volume type (e.g., "gp3" for general purpose SSD)
     delete_on_termination = true  # Optional: Automatically delete volume on instance termination
   }
   
   tags = {
-    Name      = "aap-controller"
+    Name      = "Exposed-Node"
     Terraform = "true"
   }
 }
 
 # Add created ec2 instance to ansible inventory
-resource "ansible_host" "aap_instance" {
-  name   = aws_instance.aap_instance.public_dns
+resource "ansible_host" "exposed_instance" {
+  name   = aws_instance.exposed_instance.public_dns
   groups = ["webserver"]
   variables = {
     ansible_user                 = "ec2-user",
