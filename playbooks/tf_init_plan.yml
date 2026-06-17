@@ -2,7 +2,22 @@
 - name: Terraform Init and Plan
   hosts: localhost
   connection: local
-  gather_facts: no
+  gather_facts: false
+  vars:
+    tf_environment: "{{ tf_environment | default('dev') }}"
+    tf_backend_map:
+      dev:
+        region: us-east-1
+        bucket: brthomps-tfstate-use1
+        key: aap-on-aws/dev/terraform.tfstate
+      stage:
+        region: us-east-1
+        bucket: brthomps-tfstate-use1
+        key: aap-on-aws/stage/terraform.tfstate
+      prod:
+        region: us-east-1
+        bucket: brthomps-tfstate-use1
+        key: aap-on-aws/prod/terraform.tfstate
 
   collections:
     - cloud.terraform
@@ -11,14 +26,14 @@
   tasks:
     - name: Check if S3 bucket exists
       amazon.aws.s3_bucket_info:
-        name: "{{ tf_s3_bucket }}"
+        name: "{{ tf_backend_map[tf_environment].bucket }}"
       register: s3_bucket_info
 
     - name: Create S3 bucket if it doesn't exist
       amazon.aws.s3_bucket:
-        name: "{{ tf_s3_bucket }}"
+        name: "{{ tf_backend_map[tf_environment].bucket }}"
         state: present
-        region: "{{ tf_region }}"
+        region: "{{ tf_backend_map[tf_environment].region }}"
         public_access:
           block_public_acls: true
           ignore_public_acls: true
@@ -39,9 +54,9 @@
         init_reconfigure: yes
         plan_file: "theplan"
         backend_config:
-          region: "{{ tf_region }}"
-          bucket: "{{ tf_s3_bucket }}"
-          key: "random.tfstate"
+          region: "{{ tf_backend_map[tf_environment].region }}"
+          bucket: "{{ tf_backend_map[tf_environment].bucket }}"
+          key: "{{ tf_backend_map[tf_environment].key }}"
       check_mode: yes
       register: terraform_output
 
